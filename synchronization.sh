@@ -14,6 +14,8 @@ __reload_history () {
     history -r $f
   done
 }
+
+# the below causes reload_history to be called every time a command is issued
 if [[ "$PROMPT_COMMAND" != *__reload_history* ]]; then
   export PROMPT_COMMAND="__reload_history; $PROMPT_COMMAND"
 fi

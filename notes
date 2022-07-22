@@ -1,0 +1,66 @@
+
+https://askubuntu.com/questions/191999/how-to-clear-bash-history-completely
+https://askubuntu.com/questions/953334/how-does-the-history-command-work
+
+history -a # save (append) the active shell's history (by default to ~/.bash_history)
+history -w # save (overwrite) the active shell's history (by default to ~/.bash_history)
+history -c # clear the active shell's history
+history -d NNN # delete row NNN of the active shell's history
+history -r # reload the active shell's history (by default from ~/.bash_history)
+
+
+a file ~/.bash_history.$$ is created for every session. $$ is shell's pid.
+every time a shell command is issued __reload_history__ is called (guess first time it's called, it created that .bash_history.$$) 
+
+as shell commands are issues, they all get added to the file .bash_history.$$
+on shell seesion exit __merge_history_file is called and it appends content of .bash_history.$$ to .bash_history
+
+
+
+issue with 'shrinked since it was backed up' - 
+
+for the sake of below example let's assume a size limit for each file is 5 lines.
+
+below an initial 'history' file. no 'history.bak' exists.
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+cccccccccccccccccccccccccccccccccccccccccccccccccc
+dddddddddddddddddddddddddddddddddddddddddddddddddd
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
+
+then a bash session gets started. 2 commands get issued - 'cd' and 'ls'. session exits.
+we end up with 'history' and 'history.bak' files. Content as follows.
+
+history
+
+ls
+cd
+cccccccccccccccccccccccccccccccccccccccccccccccccc
+dddddddddddddddddddddddddddddddddddddddddddddddddd
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
+
+history.back
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+cccccccccccccccccccccccccccccccccccccccccccccccccc
+dddddddddddddddddddddddddddddddddddddddddddddddddd
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
+
+then if a new sessions gets started, it'll complain that 'History file ".bash_history" shrinked since it was backed up.'
+
+
+TODO
+make use of
+filter_bash_history
+
+
+
+# useful alias for testing
+# alias tes='source smart-bash-history/filtering.sh; rm -f tesci*; echo "#1234567890" > tescik; echo "ls" >> tescik; echo "#0987654321" >> tescik; echo "cd" >> tescik ; '
+
+

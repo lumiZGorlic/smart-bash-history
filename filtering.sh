@@ -5,17 +5,22 @@ filter_bash_history() {
   backup="$file.before-filtering.bak"
   \mv "$file" "$backup"
 
+
   # trim leading and trailing whitespace
   cat "$backup" | sed -r 's/^\s+//; s/\s+$//' |
 
-  # check whether commands have timestamps (man bash -> HISTTIMEFORMAT);
-  # put timestamp and command in one line to make sorting possible.
-  if grep -E "^#[0-9]{10}$" </dev/stdin >/dev/null; then
-    # squashes multiline commands
-    sed '1i\\' | tr '\n' ' ' | sed -r 's/ (#[0-9]{10}) /\n\1 /g' | sed '1d'
-  else  # add placeholder
-    sed -n '/^#[0-9]*$/!{s/^/#0000000000 /; p}' 
-  fi |
+#  # check whether commands have timestamps (man bash -> HISTTIMEFORMAT);
+#  # put timestamp and command in one line to make sorting possible.
+#  if grep -E "^#[0-9]{10}$" </dev/stdin >/dev/null; then
+#    # squashes multiline commands
+#    sed '1i\\' | tr '\n' ' ' | sed -r 's/ (#[0-9]{10}) /\n\1 /g' | sed '1d'
+#  else  # add placeholder
+#    sed -n '/^#[0-9]*$/!{s/^/#0000000000 /; p}'
+#  fi |
+#
+
+  # without above 'if' seems to work fine
+  sed -n '/^#[0-9]*$/!{s/^/#0000000000 /; p}'  |
 
   # remove trivial commands
   sed -r '/^#[0-9]* .{,6}$/d' |
